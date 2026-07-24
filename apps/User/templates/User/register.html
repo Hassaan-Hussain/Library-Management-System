@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body style='background-color: grey;'>
+    <h1>User Registration Form</h1>
+    <form action="" method='post'>
+        {% csrf_token %}
+        <p>Enter Username: {{ form.username }}</p>
+        <p>Enter Email: {{ form.email }}</p>
+        <p>Enter Password: {{ form.password1 }}</p>
+        <p>Confirm Password: {{ form.password2 }}</p>
+
+        {% if form.errors %}
+            {{ form.errors }}
+        {% endif %}
+
+        <button type="submit">Register</button>
+    </form>
+        <p>Already have an account? <a href="{% url "login" %}"><button type="submit">Login</button></a></p>
+    
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Book Page</title>
+</head>
+<body>
+    <form action="" method='post'>
+        {% csrf_token %}
+        {{ book }}
+        <button type='submit'>Update</button>
+    </form>
+        <a href="{% url "books_view" %}"><button type='submit'>Home page</button></a>
+</body>
+</html>

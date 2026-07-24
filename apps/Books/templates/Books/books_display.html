@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Books Home</title>
+</head>
+<body style='background-color: grey; justify-items: center;'>
+    
+    {% if request.user.is_authenticated %}
+        <div style='border: 2px solid; width: 100%; justify-items: end;  margin-bottom: 5px;'>
+            <div style='padding: 10px;'>
+                <a href="{% url "logout" %}"><button>Logout</button></a>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for msg in messages %}
+                {{ msg }}
+            {% endfor %}
+        {% endif %}
+
+        <h1>Logged in User: "{{ request.user }}"</h1>
+        <div style='border: 0.5px solid; background-color: white; width: 50%'>
+            <table>
+                <tr>
+                    <th style='border: 1px solid; padding: 5px;'>Name</th>
+                    <th style='border: 1px solid; padding: 5px;'>Author</th>
+                    <th style='border: 1px solid; padding: 5px;'>Quantity</th>
+                </tr>
+                {% for book in books %}
+                    <tr>
+                        <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ book.name }}</td>
+                        <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ book.author }}</td>
+                        <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ book.quantity }}</td>
+                        {% if perms.Books.delete_books %}
+                            <td style='padding: 5px;'><button type='submit' style='cursor: pointer; padding: 5px;'><a href="{% url "delete_book" book.id %}">Delete Book</a></button></td>
+                            <td style='padding: 5px;'><button type='submit' style='cursor: pointer; padding: 5px;'><a href="{% url "update_book" book.id %}">Update Book</a></button></td>
+                        {% endif %}
+                        
+                        {% comment %} <td style='padding: 5px;'><button style='cursor: pointer; padding: 5px;'><a href="{% url "borrow_books" book.id %}">Borrow</a></button></td> {% endcomment %}
+                    </tr>
+                {% endfor %}
+            </table>   
+        </div>
+        {% if perms.Books.add_books %}
+            <div>
+                <button style='cursor: pointer; padding: 5px; margin-top: 10px;'><a href="{% url "add_book" %}">Add Book</a></button>
+            </div>    
+        {% endif %}
+        
+    {% else %}
+        <div style='border: 2px solid; width: 100%; justify-items: end;  margin-bottom: 5px;'>
+            <div style='padding: 10px;'>
+                <a href="{% url "login" %}"><button>Login</button></a>
+                <a href="{% url "register" %}"><button>Register</button></a>
+            </div>
+        </div>
+        <h1>Login to see Home Page</h1>
+    {% endif %}
+
+</body>
+</html>
