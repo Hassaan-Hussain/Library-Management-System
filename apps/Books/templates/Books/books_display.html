@@ -38,7 +38,7 @@
                             <td style='padding: 5px;'><button type='submit' style='cursor: pointer; padding: 5px;'><a href="{% url "update_book" book.id %}">Update Book</a></button></td>
                         {% endif %}
                         
-                        {% comment %} <td style='padding: 5px;'><button style='cursor: pointer; padding: 5px;'><a href="{% url "borrow_books" book.id %}">Borrow</a></button></td> {% endcomment %}
+                        <td style='padding: 5px;'><button style='cursor: pointer; padding: 5px;'><a href="{% url "borrow_book" book.id %}">Borrow Book</a></button></td>
                     </tr>
                 {% endfor %}
             </table>   
