@@ -9,9 +9,21 @@ from django.contrib.auth.models import User
 # Books Display View
 
 def book_display_view(request):
-    books = Books.objects.all()
+    try:
+        books = Books.objects.all()
+        borrowed_books = BorrowedBook.objects.filter(user=request.user.id)
+    except Exception as e:
+        raise e
+
     print(request.user)
-    return render(request, 'Books/books_display.html', {'books': books})
+    return render(
+        request, 
+        'Books/books_display.html', 
+        {
+            'books': books,
+            'borrowed_books': borrowed_books,
+        }
+    )
 
 # Books Adding View
 @login_required(login_url='login')

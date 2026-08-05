@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils import timezone
+from datetime import timedelta
 
 # Create your models here.
 
@@ -24,6 +26,7 @@ class BorrowedBook(models.Model):
         MinValueValidator(1),
     ])
     fee = models.IntegerField()
+    return_date = models.DateTimeField(blank=True, null=True)
     borrowed_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -42,3 +45,13 @@ class BorrowedBook(models.Model):
 
         self.full_clean()
         super().save(*args, **kwargs)
+
+    def clean(self):
+        today = timezone.now()
+        one_month_later = today + timedelta(days=30)
+
+        if self.return_date:
+            if self.return_date < today:
+                raise ValidationError('Return date cannot be in the past')
+            if self.return_date > one_month_later:
+                raise ValidationError('Return Date cannot be more than 30 days')
