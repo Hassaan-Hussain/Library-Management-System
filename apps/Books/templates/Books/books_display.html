@@ -41,9 +41,11 @@
                             <td style='padding: 5px;'><button type='submit' style='cursor: pointer; padding: 5px;'><a href="{% url "update_book" book.id %}">Update Book</a></button></td>
                         {% endif %}
                         
-                        {% if  perms.Books.add_borrowedbook %}
+                        
+                        {% if book.id in borrowed_books_ids %}
+                            <td style='padding: 5px;'><button style='padding: 5px;'>Book Borrowed</button></td>
                         {% else %}
-                        <td style='padding: 5px;'><button style='cursor: pointer; padding: 5px;'><a href="{% url "borrow_book" book.id %}">Borrow Book</a></button></td>
+                            <td style='padding: 5px;'><button style='cursor: pointer; padding: 5px;'><a href="{% url "borrow_book" book.id %}">Borrow Book</a></button></td>
                         {% endif %}
                     </tr>
                 {% endfor %}
@@ -65,35 +67,41 @@
         <h1>Login to see Home Page</h1>
     {% endif %}
 
-    {% if borrowed_books %}
-    <h1>Borrowed Books</h1>
-    <div>
-        <div style='border: 0.5px solid; background-color: white; width: 100%'>
-            <table>
-                <tr>
-                    <th style='border: 1px solid; padding: 5px;'>Borrower</th>
-                    <th style='border: 1px solid; padding: 5px;'>Book</th>
-                    <th style='border: 1px solid; padding: 5px;'>No. of Book</th>
-                    <th style='border: 1px solid; padding: 5px;'>Total Return Fee</th>
-                    <th style='border: 1px solid; padding: 5px;'>Borrow Date</th>
-                </tr>
-                {% for b_book in borrowed_books %}
-                {% if b_book %}
-                <tr>
-                    <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.user }}</td>
-                    <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.book }}</td>
-                    <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.no_of_books }}</td>
-                    <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.fee }}</td>
-                    <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.borrowed_date | date:"Y-m-d" }}</td>
-                </tr>
-                {% endif %}
-                {% endfor %}
-            </table>
-        </div>
-    </div>
-    {% else %}
-    <h1>No Books in Library</h1>
+    <!-- Borrowed Books Table -->
+    {% if not user.is_staff %}
+        {% if borrowed_books %}
+            <h1>Borrowed Books</h1>
+            <div>
+                <div style='border: 0.5px solid; background-color: white; width: 100%'>
+                    <table>
+                        <tr>
+                            <th style='border: 1px solid; padding: 5px;'>Borrower</th>
+                            <th style='border: 1px solid; padding: 5px;'>Book</th>
+                            <th style='border: 1px solid; padding: 5px;'>No. of Book</th>
+                            <th style='border: 1px solid; padding: 5px;'>Total Return Fee</th>
+                            <th style='border: 1px solid; padding: 5px;'>Borrow Date</th>
+                        </tr>
+                        {% for b_book in borrowed_books %}
+                            {% if b_book %}
+                            <tr>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.user }}</td>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.book }}</td>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.no_of_books }}</td>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.fee }}</td>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.borrowed_date | date:"Y-m-d" }}</td>
+                                {% if not user.is_staff %}
+                                    <td><button><a href="{% url 'return_book' b_book.id %}">Return Book</a></button></td>
+                                {% endif %}
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <h1>No Borrowed Books</h1>
+        {% endif %}
     {% endif %}
-
+    
 </body>
 </html>

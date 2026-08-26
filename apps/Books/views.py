@@ -8,20 +8,26 @@ from django.contrib.auth.models import User
   
 # Books Display View
 
+@login_required(login_url='login')
 def book_display_view(request):
-    try:
-        books = Books.objects.all()
-        borrowed_books = BorrowedBook.objects.filter(user=request.user.id)
-    except Exception as e:
-        raise e
+    books = Books.objects.all()
+    borrowed_books = BorrowedBook.objects.filter(user=request.user)
+    borrowed_books_ids = borrowed_books.values_list('book_id')
 
+    book_ids = []
+    for book in borrowed_books_ids:
+        book_ids.append(*book) 
+        
+    print(book_ids)
     print(request.user)
+
     return render(
         request, 
         'Books/books_display.html', 
         {
             'books': books,
             'borrowed_books': borrowed_books,
+            'borrowed_books_ids': book_ids,
         }
     )
 
@@ -90,3 +96,25 @@ def borrow_book_view(request, id):
         'book': book
         }
         )
+
+@login_required(login_url='login')
+def return_book_view(request, id):
+    borrowed_book = get_object_or_404(BorrowedBook, pk=id)
+    library_book = get_object_or_404(Books, pk=id)
+
+    if request.method == 'POST':
+        total_books_return = borrowed_book.no_of_books
+        library_book.quantity += total_books_return
+        library_book.save()
+        borrowed_book.delete()
+
+        messages.info(request, 'Book Returned Sucessfully')
+        return redirect('books_view')
+
+    return render(
+        request, 
+        'Books/return_book.html',
+        {
+            'book': borrowed_book,
+        }
+    ) 

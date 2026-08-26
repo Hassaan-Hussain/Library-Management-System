@@ -38,15 +38,13 @@ class BorrowBookForm(forms.ModelForm):
 
         self.fields['return_date'].widget.attrs['min'] = today.strftime('%Y-%m-%d')
         self.fields['return_date'].widget.attrs['max'] = one_month.strftime('%Y-%m-%d')
-        print(today)
-        print(one_month)
+        
 
     def clean_return_date(self):
         return_date = self.cleaned_data.get('return_date')
         return_date = self.cleaned_data.get('return_date')
         today = timezone.now()
         one_month_later = today + timedelta(days=30)
-        print(return_date)
 
         if return_date:
             if return_date < today:

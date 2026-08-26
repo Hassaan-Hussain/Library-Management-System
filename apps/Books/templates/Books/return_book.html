@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Book Page</title>
+</head>
+<body style='background-color: grey'>
+    <h1>Return Book</h1>
+    <table style='border: 1px solid; '>
+        <tr>
+            <th style='border: 1px solid; text-align: center;'>Borrower</th>
+            <th style='border: 1px solid; padding: 5px; text-align: center;'>Book</th>
+            <th style='border: 1px solid; padding: 5px; text-align: center;'>Borrowed Quantity</th>
+            <th style='border: 1px solid; padding: 5px; text-align: center;:'>Total Fee</th>
+        </tr>
+        <tr>
+            <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ book.user }}</td>
+            <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ book.book }}</td>
+            <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ book.no_of_books }}</td>
+            <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ book.fee }}</td>
+        </tr>
+    </table>
+
+    <form method='post' style='margin: 5px;'>
+        {% csrf_token %}
+        <button type="submit">Return Book</button>
+    </form>
+    <button><a style='margin: 5px;' href="{% url "books_view" %}">Back to Home Page</a></button>
+
+</body>
+</html>

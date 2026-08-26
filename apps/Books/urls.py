@@ -10,4 +10,6 @@ urlpatterns = [
 
     # Book Borrowing URL
     path('borrow_book/<int:id>', views.borrow_book_view, name='borrow_book'),
+    # Book Returning URL
+    path('return_book/<int:id>', views.return_book_view, name='return_book'),
 ]
