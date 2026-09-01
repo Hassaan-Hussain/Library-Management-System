@@ -100,12 +100,11 @@ def borrow_book_view(request, id):
 @login_required(login_url='login')
 def return_book_view(request, id):
     borrowed_book = get_object_or_404(BorrowedBook, pk=id)
-    library_book = get_object_or_404(Books, pk=id)
 
     if request.method == 'POST':
         total_books_return = borrowed_book.no_of_books
-        library_book.quantity += total_books_return
-        library_book.save()
+        borrowed_book.book.quantity += total_books_return
+        borrowed_book.book.save(update_fields=['quantity'])
         borrowed_book.delete()
 
         messages.info(request, 'Book Returned Sucessfully')
