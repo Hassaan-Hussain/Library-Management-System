@@ -22,10 +22,10 @@
 
         <h1>Logged in User: "{{ request.user }}"</h1>
 
-        <form action="{% url 'search_book' %}" method="get">
+        <form action="{% url 'search_book' %}" method="GET">
             <div style='display: flex'>
                 <input style='border-radius: 15px; padding: 10px; width: 100%;'
-                type="text" name='book' placeholder='Search Books'>
+                type="text" name='book' placeholder='Search Books' value={{query}}>
                 <button type="submit" style='border-radius: 15px;'>Search</button>
             </div>
         </form>
@@ -39,7 +39,7 @@
                     <th style='border: 1px solid; padding: 5px;'>Author</th>
                     <th style='border: 1px solid; padding: 5px;'>Quantity</th>
                 </tr>
-                {% for book in books %}
+                {% for book in book %}
                     <tr>
                         <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ book.name }}</td>
                         <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ book.author }}</td>
@@ -74,42 +74,10 @@
         </div>
         <h1>Login to see Home Page</h1>
     {% endif %}
-
-    <!-- Borrowed Books Table -->
-    {% if not user.is_staff %}
-        {% if borrowed_books %}
-            <h1>Borrowed Books</h1>
-            <div>
-                <div style='border: 0.5px solid; background-color: white; width: 100%'>
-                    <table>
-                        <tr>
-                            <th style='border: 1px solid; padding: 5px;'>Borrower</th>
-                            <th style='border: 1px solid; padding: 5px;'>Book</th>
-                            <th style='border: 1px solid; padding: 5px;'>No. of Book</th>
-                            <th style='border: 1px solid; padding: 5px;'>Total Return Fee</th>
-                            <th style='border: 1px solid; padding: 5px;'>Borrow Date</th>
-                        </tr>
-                        {% for b_book in borrowed_books %}
-                            {% if b_book %}
-                            <tr>
-                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.user }}</td>
-                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.book }}</td>
-                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.no_of_books }}</td>
-                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.fee }}</td>
-                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.borrowed_date | date:"Y-m-d" }}</td>
-                                {% if not user.is_staff %}
-                                    <td><button><a href="{% url 'return_book' b_book.id %}">Return Book</a></button></td>
-                                {% endif %}
-                            </tr>
-                            {% endif %}
-                        {% endfor %}
-                    </table>
-                </div>
-            </div>
-        {% else %}
-            <h1>No Borrowed Books</h1>
-        {% endif %}
-    {% endif %}
+    <div style='margin-top: 10px;'>
+        <a href="{% url 'books_view' %}"><button style='border-radius: 10px;'>Home Page</button></a>
+    </div>
+    
     
 </body>
 </html>

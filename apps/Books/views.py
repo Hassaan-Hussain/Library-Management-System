@@ -4,6 +4,8 @@ from .models import Books, BorrowedBook
 from .forms import AddBookForm, BorrowBookForm
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.db.models import Q
+from django.db import transaction
 
   
 # Books Display View
@@ -13,7 +15,7 @@ def book_display_view(request):
     books = Books.objects.all()
     borrowed_books = BorrowedBook.objects.filter(user=request.user)
     borrowed_books_ids = borrowed_books.values_list('book_id')
-
+    print('ids', borrowed_books_ids)
     book_ids = []
     for book in borrowed_books_ids:
         book_ids.append(*book) 
@@ -103,9 +105,10 @@ def return_book_view(request, id):
 
     if request.method == 'POST':
         total_books_return = borrowed_book.no_of_books
-        borrowed_book.book.quantity += total_books_return
-        borrowed_book.book.save(update_fields=['quantity'])
-        borrowed_book.delete()
+        with transaction.atomic():
+            borrowed_book.book.quantity += total_books_return
+            borrowed_book.book.save(update_fields=['quantity'])
+            borrowed_book.delete()
 
         messages.info(request, 'Book Returned Sucessfully')
         return redirect('books_view')
@@ -117,3 +120,23 @@ def return_book_view(request, id):
             'book': borrowed_book,
         }
     ) 
+
+@login_required(login_url='login')
+def search_book_view(request):
+    borrow_books = BorrowedBook.objects.values_list('book_id')
+    borrowed_books_ids = []
+    for id in borrow_books:
+        borrowed_books_ids.append(*id)
+    
+    if request.method == 'GET':
+        searched_book = request.GET.get('book').strip()
+        book = Books.objects.filter(name__icontains=searched_book)
+        return render(
+            request, 
+            'Books/search_books.html', 
+            {
+                'book': (book), 
+                'query':searched_book,
+                'borrowed_books_ids': borrowed_books_ids,
+            })
+
