@@ -28,13 +28,9 @@ class BorrowedBook(models.Model):
     fee = models.IntegerField()
     return_date = models.DateTimeField(blank=True, null=True)
     borrowed_date = models.DateTimeField(auto_now_add=True)
+    is_returned = models.BooleanField(default=False)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'book'], name='my_constraint'
-            )
-        ]
+    
 
     def __str__(self):
         return f"{self.user}:  '{self.book}'"

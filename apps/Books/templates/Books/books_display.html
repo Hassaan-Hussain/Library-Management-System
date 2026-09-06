@@ -92,7 +92,6 @@
                             <th style='border: 1px solid; padding: 5px;'>Days Remaining</th>
                         </tr>
                         {% for b_book in borrowed_books %}
-                            {% if b_book %}
                             <tr>
                                 <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.user }}</td>
                                 <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.book }}</td>
@@ -105,13 +104,51 @@
                                     <td><button><a href="{% url 'return_book' b_book.id %}">Return Book</a></button></td>
                                 {% endif %}
                             </tr>
-                            {% endif %}
+                        {% empty %}
+                            <tr>
+                                <td colspan='8' style='border: 1px solid; padding: 5px; text-align: center;'>No Borrowed Books</td>
+                            </tr>
                         {% endfor %}
                     </table>
                 </div>
             </div>
         {% else %}
             <h1>No Borrowed Books</h1>
+        {% endif %}
+    {% endif %}
+
+
+    {% if not user.is_staff %}
+        {% if borrowed_books_history %}
+            <h1>Borrow History</h1>
+            <div>
+                <div style='border: 0.5px solid; background-color: white; width: 100%'>
+                    <table>
+                        <tr>
+                            <th style='border: 1px solid; padding: 5px;'>Borrower</th>
+                            <th style='border: 1px solid; padding: 5px;'>Book</th>
+                            <th style='border: 1px solid; padding: 5px;'>No. of Book</th>
+                            <th style='border: 1px solid; padding: 5px;'>Total Fee Paid</th>
+                            <th style='border: 1px solid; padding: 5px;'>Borrow Date</th>
+                            <th style='border: 1px solid; padding: 5px;'>Return Date</th>
+                            <th style='border: 1px solid; padding: 5px;'>Status</th>
+                        </tr>
+                        {% for b_book in borrowed_books_history %}
+                            <tr>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.user }}</td>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.book }}</td>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.no_of_books }}</td>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.fee }}</td>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.borrowed_date | date:"Y-m-d" }}</td>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.return_date | date:"Y-m-d" }}</td>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{% if b_book.is_returned %}Returned{% else %}Not returned{% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <h1>No Borrow History</h1>
         {% endif %}
     {% endif %}
     

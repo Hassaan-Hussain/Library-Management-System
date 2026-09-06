@@ -14,18 +14,24 @@ from django.utils import timezone
 @login_required(login_url='login')
 def book_display_view(request):
     books = Books.objects.all()
-    borrowed_books = BorrowedBook.objects.filter(user=request.user)
-    borrowed_books_ids = borrowed_books.values_list('book_id')
-    
-    book_ids = []
-    for book in borrowed_books_ids:
-        book_ids.append(*book)
+    borrowed_books = BorrowedBook.objects.filter(
+        user=request.user,
+        is_returned=False,
+    )
+    borrowed_books_history = BorrowedBook.objects.filter(
+        user=request.user,
+        is_returned=True,
+    )
+    borrowed_books_ids = borrowed_books.values_list('book_id', flat=True)
 
+    # Fetching borrowed book ids to display Books borrowed or not
     # Fine penalty after due date
     for borrowed_book in borrowed_books:
-        with transaction.atomic():
-            if borrowed_book.days_remaining == 0:
-                borrowed_book.save(update_fields=['fee'])
+        if (
+            borrowed_book.return_date
+            and borrowed_book.return_date.date() < timezone.localdate()
+        ):
+            borrowed_book.save(update_fields=['fee'])
     
     return render(
         request, 
@@ -33,7 +39,8 @@ def book_display_view(request):
         {
             'books': books,
             'borrowed_books': borrowed_books,
-            'borrowed_books_ids': book_ids,
+            'borrowed_books_history': borrowed_books_history,
+            'borrowed_books_ids': borrowed_books_ids,
         }
     )
 
@@ -112,7 +119,8 @@ def return_book_view(request, id):
         with transaction.atomic():
             borrowed_book.book.quantity += total_books_return
             borrowed_book.book.save(update_fields=['quantity'])
-            borrowed_book.delete()
+            borrowed_book.is_returned = True
+            borrowed_book.save()
 
         messages.info(request, 'Book Returned Sucessfully')
         return redirect('books_view')
@@ -127,13 +135,13 @@ def return_book_view(request, id):
 
 @login_required(login_url='login')
 def search_book_view(request):
-    borrow_books = BorrowedBook.objects.values_list('book_id')
-    borrowed_books_ids = []
-    for id in borrow_books:
-        borrowed_books_ids.append(*id)
+    borrowed_books_ids = BorrowedBook.objects.filter(
+        user=request.user,
+        is_returned=False,
+    ).values_list('book_id', flat=True)
     
     if request.method == 'GET':
-        searched_book = request.GET.get('book').strip()
+        searched_book = request.GET.get('book', '').strip()
         book = Books.objects.filter(name__icontains=searched_book)
         return render(
             request, 
