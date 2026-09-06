@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db import transaction
+from django.utils import timezone
 
   
 # Books Display View
@@ -15,14 +16,17 @@ def book_display_view(request):
     books = Books.objects.all()
     borrowed_books = BorrowedBook.objects.filter(user=request.user)
     borrowed_books_ids = borrowed_books.values_list('book_id')
-    print('ids', borrowed_books_ids)
+    
     book_ids = []
     for book in borrowed_books_ids:
-        book_ids.append(*book) 
-        
-    print(book_ids)
-    print(request.user)
+        book_ids.append(*book)
 
+    # Fine penalty after due date
+    for borrowed_book in borrowed_books:
+        with transaction.atomic():
+            if borrowed_book.days_remaining == 0:
+                borrowed_book.save(update_fields=['fee'])
+    
     return render(
         request, 
         'Books/books_display.html', 

@@ -40,18 +40,38 @@ class BorrowedBook(models.Model):
         return f"{self.user}:  '{self.book}'"
 
     def save(self, *args, **kwargs):
-        for _ in range(self.no_of_books):
-            self.fee = self.no_of_books * 1000
+        self.fee = self.no_of_books * 1000
+
+        if (
+            self.return_date
+            and self.return_date.date() < timezone.localdate()
+        ):
+            self.fee += 1000
 
         self.full_clean()
         super().save(*args, **kwargs)
 
     def clean(self):
-        today = timezone.now()
-        one_month_later = today + timedelta(days=30)
+        if self._state.adding:
+            today = timezone.now()
+            one_month_later = today + timedelta(days=30)
 
-        if self.return_date:
-            if self.return_date < today:
-                raise ValidationError('Return date cannot be in the past')
-            if self.return_date > one_month_later:
-                raise ValidationError('Return Date cannot be more than 30 days')
+            if self.return_date:
+                if self.return_date < today:
+                    raise ValidationError('Return date cannot be in the past')
+                if self.return_date > one_month_later:
+                    raise ValidationError('Return Date cannot be more than 30 days')
+
+    @property
+    def days_remaining(self):
+        if not self.return_date:
+            return None
+
+        remaining_days = (
+            self.return_date.date() - timezone.localdate()
+        ).days
+        return max(remaining_days, 0)
+
+
+class BorrowedBookRecord(models.Model):
+    pass

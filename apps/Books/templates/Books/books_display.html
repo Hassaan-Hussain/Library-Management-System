@@ -88,6 +88,8 @@
                             <th style='border: 1px solid; padding: 5px;'>No. of Book</th>
                             <th style='border: 1px solid; padding: 5px;'>Total Return Fee</th>
                             <th style='border: 1px solid; padding: 5px;'>Borrow Date</th>
+                            <th style='border: 1px solid; padding: 5px;'>Return Date</th>
+                            <th style='border: 1px solid; padding: 5px;'>Days Remaining</th>
                         </tr>
                         {% for b_book in borrowed_books %}
                             {% if b_book %}
@@ -97,6 +99,8 @@
                                 <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.no_of_books }}</td>
                                 <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.fee }}</td>
                                 <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.borrowed_date | date:"Y-m-d" }}</td>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.return_date | date:"Y-m-d" }}</td>
+                                <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ b_book.days_remaining }}</td>
                                 {% if not user.is_staff %}
                                     <td><button><a href="{% url 'return_book' b_book.id %}">Return Book</a></button></td>
                                 {% endif %}
