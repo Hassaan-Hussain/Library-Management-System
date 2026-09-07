@@ -58,7 +58,28 @@
                     </tr>
                 {% endfor %}
             </table>   
+            {% if books.has_other_pages %}
+                <div>
+                    {% if books.has_previous %}
+                        <a href="?page={{ books.previous_page_number }}">
+                            Previous
+                        </a>
+                    {% endif %}
+    
+                    <span style='padding: 1rem;'>
+                        Page {{ books.number }} of {{ books.paginator.num_pages }}
+                    </span>
+    
+                    {% if books.has_next %}
+                        <a href="?page={{ books.next_page_number }}">
+                            Next
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
+
+
         {% if perms.Books.add_books %}
             <div>
                 <button style='cursor: pointer; padding: 5px; margin-top: 10px;'><a href="{% url "add_book" %}">Add Book</a></button>

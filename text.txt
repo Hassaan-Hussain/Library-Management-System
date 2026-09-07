@@ -1,10 +1,4 @@
-Role-based access: admin vs user
-Search and filter
-Borrow history
-Fine calculation based on due date
-Return date validation
 Sort by book name/author
-Pagination
 Email notifications
 Admin dashboard
 Unit tests for borrowing and returning logic

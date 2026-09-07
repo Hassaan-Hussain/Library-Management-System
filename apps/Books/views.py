@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db import transaction
 from django.utils import timezone
+from django.core.paginator import Paginator
 
   
 # Books Display View
@@ -14,6 +15,11 @@ from django.utils import timezone
 @login_required(login_url='login')
 def book_display_view(request):
     books = Books.objects.all()
+
+    paginator = Paginator(books, 2)
+    page_number = request.GET.get('page')
+    books_page = paginator.get_page(page_number)
+
     borrowed_books = BorrowedBook.objects.filter(
         user=request.user,
         is_returned=False,
@@ -37,7 +43,7 @@ def book_display_view(request):
         request, 
         'Books/books_display.html', 
         {
-            'books': books,
+            'books': books_page,
             'borrowed_books': borrowed_books,
             'borrowed_books_history': borrowed_books_history,
             'borrowed_books_ids': borrowed_books_ids,

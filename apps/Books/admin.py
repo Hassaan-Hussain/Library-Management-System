@@ -3,9 +3,8 @@ from .models import Books, BorrowedBook
 
 # Register your models here.
 
-class BorrowedBookAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'book', 'no_of_books', 'fee', 'return_date', 'borrowed_date',]
-
+class BorrowedBookAdmin(admin.ModelAdmin):    
+    list_display = ['id', 'user', 'book', 'no_of_books', 'fee', 'return_date', 'borrowed_date', 'borrow_book_status']
     list_display_links = ['user']
 
 

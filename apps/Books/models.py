@@ -59,6 +59,13 @@ class BorrowedBook(models.Model):
                     raise ValidationError('Return Date cannot be more than 30 days')
 
     @property
+    def borrow_book_status(self):
+        if self.is_returned:
+            return True
+        
+        return False
+
+    @property
     def days_remaining(self):
         if not self.return_date:
             return None
