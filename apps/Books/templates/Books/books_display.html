@@ -19,9 +19,9 @@
                 {{ msg }}
             {% endfor %}
         {% endif %}
-
+        
         <h1>Logged in User: "{{ request.user }}"</h1>
-
+        
         <form action="{% url 'search_book' %}" method="get">
             <div style='display: flex'>
                 <input style='border-radius: 15px; padding: 10px; width: 100%;'
@@ -31,6 +31,43 @@
         </form>
         
         <h1>Library Books</h1>
+        
+        
+        <div>
+            <form action="" method='GET'>
+                Sort By
+
+                {% if books.has_next %}
+                    <button><a href="?sort=name&page=1">Name</a></button>
+                    <button><a href="?sort=author&page=1">Author</a></button>
+                {% endif %}
+
+                {% if books.has_previous %}
+                    <button><a href="?sort=name&page=2">Name</a></button>
+                    <button><a href="?sort=author&page=2">Author</a></button>
+                {% endif %}
+                    <br><br>
+                    {% if books.has_other_pages %}
+                    <div>
+                        {% if books.has_previous %}
+                        <a href="?sort={{ sort }}&page={{ books.previous_page_number }}">
+                            Previous
+                        </a>
+                        {% endif %}
+                        
+                        <span style='padding: 1rem;'>
+                            Page {{ books.number }} of {{ books.paginator.num_pages }}
+                        </span>
+                        
+                        {% if books.has_next %}
+                        <a href="?sort={{ sort }}&page={{ books.next_page_number }}">
+                            Next
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
 
         <div style='border: 0.5px solid; background-color: white; width: 50%'>
             <table>
@@ -39,6 +76,10 @@
                     <th style='border: 1px solid; padding: 5px;'>Author</th>
                     <th style='border: 1px solid; padding: 5px;'>Quantity</th>
                 </tr>
+
+
+
+
                 {% for book in books %}
                     <tr>
                         <td style='border: 1px solid; padding: 5px; text-align: center;'>{{ book.name }}</td>
@@ -58,25 +99,7 @@
                     </tr>
                 {% endfor %}
             </table>   
-            {% if books.has_other_pages %}
-                <div>
-                    {% if books.has_previous %}
-                        <a href="?page={{ books.previous_page_number }}">
-                            Previous
-                        </a>
-                    {% endif %}
-    
-                    <span style='padding: 1rem;'>
-                        Page {{ books.number }} of {{ books.paginator.num_pages }}
-                    </span>
-    
-                    {% if books.has_next %}
-                        <a href="?page={{ books.next_page_number }}">
-                            Next
-                        </a>
-                    {% endif %}
-                </div>
-            {% endif %}
+            
         </div>
 
 

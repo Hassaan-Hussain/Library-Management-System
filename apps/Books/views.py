@@ -8,22 +8,69 @@ from django.db.models import Q
 from django.db import transaction
 from django.utils import timezone
 from django.core.paginator import Paginator
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string
 
   
 # Books Display View
 
 @login_required(login_url='login')
 def book_display_view(request):
+
+    html_message = render_to_string(
+        'email/email.html',
+    )
+    send_mail(
+        "Django Test Mail Feature",
+        "Django Email Working",
+        "hafizhassaan114@gmail.com",
+        ["f2022105156@umt.edu.pk"],
+        html_message=html_message,
+    )
+
+
+
+
+
+
+
+    # email.attach_alternative(
+    #     "<h1>Hello Alternative</h1>"
+    #     "<italic> New Message </italic>",
+    #     "text/html"
+    # )
+    # email.send()
+
+
+
+    sort_by = request.GET.get('sort')
+    print(sort_by)
+
+    allowed_sorted_fields = {
+        'name': 'name',
+        'author': 'author',
+    }
+
     books = Books.objects.all()
+
+    if sort_by == 'name':
+        sort_by_field = allowed_sorted_fields.get(sort_by, 'name')
+        books = Books.objects.all().order_by(sort_by_field)
+        
+    if sort_by == 'author':
+        sort_by_field = allowed_sorted_fields.get(sort_by, 'author')
+        books = Books.objects.all().order_by(sort_by_field)
 
     paginator = Paginator(books, 2)
     page_number = request.GET.get('page')
     books_page = paginator.get_page(page_number)
 
+    
     borrowed_books = BorrowedBook.objects.filter(
         user=request.user,
         is_returned=False,
     )
+    
     borrowed_books_history = BorrowedBook.objects.filter(
         user=request.user,
         is_returned=True,
@@ -47,6 +94,7 @@ def book_display_view(request):
             'borrowed_books': borrowed_books,
             'borrowed_books_history': borrowed_books_history,
             'borrowed_books_ids': borrowed_books_ids,
+            'sort': sort_by,
         }
     )
 
@@ -96,14 +144,23 @@ def borrow_book_view(request, id):
     if request.method == 'POST':
         form = BorrowBookForm(request.POST)
         if form.is_valid():
-            book_borrower = form.save(commit=False)
-            book_borrower.user = user
-            book_borrower.book = book
-            book.quantity = book.quantity - book_borrower.no_of_books
-            book.save()
-            book_borrower.save()
-            messages.success(request, 'Book Borrowed')            
-            return redirect('books_view')
+            try:
+                book_borrower = form.save(commit=False)
+                book_borrower.user = user
+                book_borrower.book = book
+                book.quantity = book.quantity - book_borrower.no_of_books
+                book.save()
+                book_borrower.save()
+                send_mail(
+                    "Django Test Mail Feature",
+                    "Django Email Working",
+                    "hafizhassaan114@gmail.com",
+                    ["f2022105156@umt.edu.pk"],
+                )
+                messages.success(request, 'Book Borrowed')            
+                return redirect('books_view')
+            except:
+                raise Exception
     else:
         form = BorrowBookForm()
 

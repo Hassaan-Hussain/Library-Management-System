@@ -1,4 +1,1 @@
-Sort by book name/author
-Email notifications
-Admin dashboard
 Unit tests for borrowing and returning logic
